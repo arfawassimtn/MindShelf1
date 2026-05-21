@@ -213,21 +213,35 @@ input, textarea {
   </div>
 
   <script>
-let chats = [];
+
+let chats =
+  JSON.parse(localStorage.getItem("mindshelf_chats")) || [];
 
 /* VIEW SWITCH */
 function setView(viewId) {
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.getElementById(viewId).classList.add("active");
+  document
+    .querySelectorAll(".view")
+    .forEach(v => v.classList.remove("active"));
+
+  document
+    .getElementById(viewId)
+    .classList.add("active");
+
   updateDashboard();
   renderChats();
+  analyzeBehavior();
 }
 
 /* ADD CHAT */
 function addChat() {
-  const title = document.getElementById("chatTitle").value;
-  const tag = document.getElementById("chatTag").value;
-  const content = document.getElementById("chatContent").value;
+  const title =
+    document.getElementById("chatTitle").value;
+
+  const tag =
+    document.getElementById("chatTag").value;
+
+  const content =
+    document.getElementById("chatContent").value;
 
   if (!title || !content) return;
 
@@ -241,36 +255,73 @@ function addChat() {
   };
 
   chats.push(chat);
+
+  save();
   renderChats();
   updateDashboard();
+  analyzeBehavior();
+
+  document.getElementById("chatTitle").value = "";
+  document.getElementById("chatTag").value = "";
+  document.getElementById("chatContent").value = "";
+}
+
+/* SAVE */
+function save() {
+  localStorage.setItem(
+    "mindshelf_chats",
+    JSON.stringify(chats)
+  );
 }
 
 /* RENDER CHATS */
 function renderChats() {
-  const list = document.getElementById("chatList");
-  const search = document.getElementById("search")?.value || "";
+  const list =
+    document.getElementById("chatList");
+
+  const search =
+    document.getElementById("search")
+      ?.value || "";
 
   list.innerHTML = "";
 
   chats
     .filter(c =>
-      c.title.toLowerCase().includes(search.toLowerCase()) ||
-      c.tag.toLowerCase().includes(search.toLowerCase())
+      c.title
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      c.tag
+        .toLowerCase()
+        .includes(search.toLowerCase())
     )
     .forEach(chat => {
-      const div = document.createElement("div");
+      const div =
+        document.createElement("div");
+
       div.className = "chat";
 
       div.innerHTML = `
         <h3>${chat.title}</h3>
-        <small>#${chat.tag} • ${chat.date}</small>
+
+        <small>
+          #${chat.tag}
+          • ${chat.date}
+        </small>
+
         <p>${chat.content}</p>
 
         <button onclick="toggleFav(${chat.id})">
-          ${chat.favorite ? "★ Remove Fav" : "☆ Favorite"}
+          ${
+            chat.favorite
+              ? "★ Remove Fav"
+              : "☆ Favorite"
+          }
         </button>
 
-        <button onclick="deleteChat(${chat.id})">Delete</button>
+        <button onclick="deleteChat(${chat.id})">
+          Delete
+        </button>
       `;
 
       list.appendChild(div);
@@ -282,50 +333,218 @@ function renderChats() {
 /* FAVORITES */
 function toggleFav(id) {
   chats = chats.map(c =>
-    c.id === id ? { ...c, favorite: !c.favorite } : c
+    c.id === id
+      ? { ...c, favorite: !c.favorite }
+      : c
   );
+
+  save();
   renderChats();
 }
 
 /* DELETE */
 function deleteChat(id) {
-  chats = chats.filter(c => c.id !== id);
+  chats =
+    chats.filter(c => c.id !== id);
+
+  save();
   renderChats();
   updateDashboard();
+  analyzeBehavior();
 }
 
 /* FAVORITE VIEW */
 function renderFavorites() {
-  const fav = document.getElementById("favoriteList");
-  if (!fav) return;
+  const fav =
+    document.getElementById(
+      "favoriteList"
+    );
 
   fav.innerHTML = "";
 
-  chats.filter(c => c.favorite).forEach(chat => {
-    const div = document.createElement("div");
-    div.className = "chat";
-    div.innerHTML = `<h3>${chat.title}</h3><p>${chat.content}</p>`;
-    fav.appendChild(div);
-  });
+  chats
+    .filter(c => c.favorite)
+    .forEach(chat => {
+      const div =
+        document.createElement("div");
+
+      div.className = "chat";
+
+      div.innerHTML = `
+        <h3>${chat.title}</h3>
+        <p>${chat.content}</p>
+      `;
+
+      fav.appendChild(div);
+    });
 }
 
 /* DASHBOARD */
 function updateDashboard() {
-  document.getElementById("totalChats").innerText = chats.length;
-  document.getElementById("totalPinned").innerText = chats.filter(c => c.favorite).length;
+  document.getElementById(
+    "totalChats"
+  ).innerText = chats.length;
 
-  const tags = new Set(chats.map(c => c.tag));
-  document.getElementById("totalCategories").innerText = tags.size;
+  document.getElementById(
+    "totalPinned"
+  ).innerText =
+    chats.filter(c => c.favorite).length;
+
+  const tags =
+    new Set(chats.map(c => c.tag));
+
+  document.getElementById(
+    "totalCategories"
+  ).innerText =
+    tags.size;
 }
 
 /* THEME */
 function toggleTheme() {
-  document.body.classList.toggle("dark");
+  document.body
+    .classList
+    .toggle("dark");
+}
+
+/* ==========================
+   BEHAVIOR ANALYSIS ENGINE
+========================== */
+
+function analyzeBehavior() {
+
+  const analysisBox =
+    document.getElementById(
+      "analysisBox"
+    );
+
+  if (chats.length === 0) {
+    analysisBox.innerHTML =
+      "No behavior data yet.";
+
+    return;
+  }
+
+  /* TOP INTEREST */
+  const tagCount = {};
+
+  chats.forEach(chat => {
+    const tag =
+      chat.tag.toLowerCase();
+
+    if (tag) {
+      tagCount[tag] =
+        (tagCount[tag] || 0) + 1;
+    }
+  });
+
+  const topInterest =
+    Object.keys(tagCount)
+      .sort(
+        (a, b) =>
+          tagCount[b] -
+          tagCount[a]
+      )[0] || "Unknown";
+
+  /* GOAL DETECTION */
+  const goalWords = [
+    "learn",
+    "become",
+    "improve",
+    "master",
+    "practice",
+    "build"
+  ];
+
+  const goals = [];
+
+  chats.forEach(chat => {
+
+    const text =
+      (
+        chat.title +
+        " " +
+        chat.content
+      ).toLowerCase();
+
+    goalWords.forEach(word => {
+      if (text.includes(word)) {
+        goals.push(word);
+      }
+    });
+  });
+
+  const mainGoal =
+    goals.length > 0
+      ? goals[0]
+      : "No clear goal";
+
+  /* CONSISTENCY */
+  let consistency =
+    "Low";
+
+  if (chats.length >= 5)
+    consistency = "Medium";
+
+  if (chats.length >= 10)
+    consistency = "High";
+
+  /* INSIGHTS */
+  let insights = [];
+
+  insights.push(
+    `Your strongest interest is "${topInterest}".`
+  );
+
+  insights.push(
+    `Your main learning pattern appears to be "${mainGoal}".`
+  );
+
+  if (
+    chats.length > 10
+  ) {
+    insights.push(
+      "You are consistently storing ideas and learning materials."
+    );
+  }
+
+  if (
+    Object.keys(tagCount)
+      .length > 5
+  ) {
+    insights.push(
+      "You explore many topics. Consider focusing on fewer priorities."
+    );
+  }
+
+  /* UPDATE UI */
+  document.getElementById(
+    "topInterest"
+  ).innerText =
+    topInterest;
+
+  document.getElementById(
+    "mainGoal"
+  ).innerText =
+    mainGoal;
+
+  document.getElementById(
+    "consistency"
+  ).innerText =
+    consistency;
+
+  analysisBox.innerHTML =
+    insights
+      .map(
+        i => `<p>• ${i}</p>`
+      )
+      .join("");
 }
 
 /* INIT */
 renderChats();
 updateDashboard();
+analyzeBehavior();
+
   </script>
 </body>
 </html>
