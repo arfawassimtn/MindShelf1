@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindShelf v1.0.0</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>🧠 MindShelf</h2>
+
+      <button onclick="setView('dashboard')">Dashboard</button>
+      <button onclick="setView('chats')">Chats</button>
+      <button onclick="setView('favorites')">Favorites</button>
+      <button onclick="setView('analysis')">Behavior</button>
+
+      <hr/>
+
+      <button onclick="toggleTheme()">🌗 Theme</button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view active">
+        <h1>Dashboard</h1>
+
+        <div class="cards">
+          <div class="card">
+            <h3>Total Chats</h3>
+            <p id="totalChats">0</p>
+          </div>
+
+          <div class="card">
+            <h3>Pinned</h3>
+            <p id="totalPinned">0</p>
+          </div>
+
+          <div class="card">
+            <h3>Categories</h3>
+            <p id="totalCategories">0</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHATS -->
+      <section id="chats" class="view">
+        <h1>Chats</h1>
+
+        <div class="input-area">
+          <input id="chatTitle" placeholder="Chat title"/>
+          <input id="chatTag" placeholder="Tag (AI, Career, etc)"/>
+          <textarea id="chatContent" placeholder="Write your chat or insight..."></textarea>
+
+          <button onclick="addChat()">Add Chat</button>
+        </div>
+
+        <input id="search" placeholder="Search chats..." oninput="renderChats()"/>
+
+        <div id="chatList"></div>
+      </section>
+
+      <!-- FAVORITES -->
+      <section id="favorites" class="view">
+        <h1>Favorites</h1>
+        <div id="favoriteList"></div>
+      </section>
+
+      <!-- ANALYSIS -->
+      <section id="analysis" class="view">
+        <h1>Behavior Analysis</h1>
+        <div id="analysisBox"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
