@@ -1,87 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MindShelf v1.0.0</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindShelf v1.0.0</title>
+  <style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  color: #111;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background: #111;
+  color: white;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar button {
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  background: #222;
+  color: white;
+  border-radius: 6px;
+}
+
+.sidebar button:hover {
+  background: #333;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  gap: 10px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  flex: 1;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* INPUT */
+.input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* CHAT ITEM */
+.chat {
+  background: white;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+.chat small {
+  color: gray;
+}
+
+/* DARK MODE */
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.dark .card,
+.dark .chat {
+  background: #1e1e1e;
+}
+
+.dark input,
+.dark textarea {
+  background: #222;
+  color: white;
+}
+  </style>
 </head>
 
 <body>
-  <div class="app">
+  <div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <h2>🧠 MindShelf</h2>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>🧠 MindShelf</h2>
 
-      <button onclick="setView('dashboard')">Dashboard</button>
-      <button onclick="setView('chats')">Chats</button>
-      <button onclick="setView('favorites')">Favorites</button>
-      <button onclick="setView('analysis')">Behavior</button>
+      <button onclick="setView('dashboard')">Dashboard</button>
+      <button onclick="setView('chats')">Chats</button>
+      <button onclick="setView('favorites')">Favorites</button>
+      <button onclick="setView('analysis')">Behavior</button>
 
-      <hr/>
+      <hr/>
 
-      <button onclick="toggleTheme()">🌗 Theme</button>
-    </aside>
+      <button onclick="toggleTheme()">🌗 Theme</button>
+    </aside>
 
-    <!-- MAIN -->
-    <main class="main">
+    <!-- MAIN -->
+    <main class="main">
 
-      <!-- DASHBOARD -->
-      <section id="dashboard" class="view active">
-        <h1>Dashboard</h1>
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view active">
+        <h1>Dashboard</h1>
 
-        <div class="cards">
-          <div class="card">
-            <h3>Total Chats</h3>
-            <p id="totalChats">0</p>
-          </div>
+        <div class="cards">
+          <div class="card">
+            <h3>Total Chats</h3>
+            <p id="totalChats">0</p>
+          </div>
 
-          <div class="card">
-            <h3>Pinned</h3>
-            <p id="totalPinned">0</p>
-          </div>
+          <div class="card">
+            <h3>Pinned</h3>
+            <p id="totalPinned">0</p>
+          </div>
 
-          <div class="card">
-            <h3>Categories</h3>
-            <p id="totalCategories">0</p>
-          </div>
-        </div>
-      </section>
+          <div class="card">
+            <h3>Categories</h3>
+            <p id="totalCategories">0</p>
+          </div>
+        </div>
+      </section>
 
-      <!-- CHATS -->
-      <section id="chats" class="view">
-        <h1>Chats</h1>
+      <!-- CHATS -->
+      <section id="chats" class="view">
+        <h1>Chats</h1>
 
-        <div class="input-area">
-          <input id="chatTitle" placeholder="Chat title"/>
-          <input id="chatTag" placeholder="Tag (AI, Career, etc)"/>
-          <textarea id="chatContent" placeholder="Write your chat or insight..."></textarea>
+        <div class="input-area">
+          <input id="chatTitle" placeholder="Chat title"/>
+          <input id="chatTag" placeholder="Tag (AI, Career, etc)"/>
+          <textarea id="chatContent" placeholder="Write your chat or insight..."></textarea>
 
-          <button onclick="addChat()">Add Chat</button>
-        </div>
+          <button onclick="addChat()">Add Chat</button>
+        </div>
 
-        <input id="search" placeholder="Search chats..." oninput="renderChats()"/>
+        <input id="search" placeholder="Search chats..." oninput="renderChats()"/>
 
-        <div id="chatList"></div>
-      </section>
+        <div id="chatList"></div>
+      </section>
 
-      <!-- FAVORITES -->
-      <section id="favorites" class="view">
-        <h1>Favorites</h1>
-        <div id="favoriteList"></div>
-      </section>
+      <!-- FAVORITES -->
+      <section id="favorites" class="view">
+        <h1>Favorites</h1>
+        <div id="favoriteList"></div>
+      </section>
 
-      <!-- ANALYSIS -->
-      <section id="analysis" class="view">
-        <h1>Behavior Analysis</h1>
-        <div id="analysisBox"></div>
-      </section>
+      <!-- ANALYSIS -->
+      <section id="analysis" class="view">
+        <h1>Behavior Analysis</h1>
+        <div id="analysisBox"></div>
+      </section>
 
-    </main>
-  </div>
+    </main>
+  </div>
 
-  <script src="script.js"></script>
+  <script>
+let chats = [];
+
+/* VIEW SWITCH */
+function setView(viewId) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(viewId).classList.add("active");
+  updateDashboard();
+  renderChats();
+}
+
+/* ADD CHAT */
+function addChat() {
+  const title = document.getElementById("chatTitle").value;
+  const tag = document.getElementById("chatTag").value;
+  const content = document.getElementById("chatContent").value;
+
+  if (!title || !content) return;
+
+  const chat = {
+    id: Date.now(),
+    title,
+    tag,
+    content,
+    favorite: false,
+    date: new Date().toLocaleDateString()
+  };
+
+  chats.push(chat);
+  renderChats();
+  updateDashboard();
+}
+
+/* RENDER CHATS */
+function renderChats() {
+  const list = document.getElementById("chatList");
+  const search = document.getElementById("search")?.value || "";
+
+  list.innerHTML = "";
+
+  chats
+    .filter(c =>
+      c.title.toLowerCase().includes(search.toLowerCase()) ||
+      c.tag.toLowerCase().includes(search.toLowerCase())
+    )
+    .forEach(chat => {
+      const div = document.createElement("div");
+      div.className = "chat";
+
+      div.innerHTML = `
+        <h3>${chat.title}</h3>
+        <small>#${chat.tag} • ${chat.date}</small>
+        <p>${chat.content}</p>
+
+        <button onclick="toggleFav(${chat.id})">
+          ${chat.favorite ? "★ Remove Fav" : "☆ Favorite"}
+        </button>
+
+        <button onclick="deleteChat(${chat.id})">Delete</button>
+      `;
+
+      list.appendChild(div);
+    });
+
+  renderFavorites();
+}
+
+/* FAVORITES */
+function toggleFav(id) {
+  chats = chats.map(c =>
+    c.id === id ? { ...c, favorite: !c.favorite } : c
+  );
+  renderChats();
+}
+
+/* DELETE */
+function deleteChat(id) {
+  chats = chats.filter(c => c.id !== id);
+  renderChats();
+  updateDashboard();
+}
+
+/* FAVORITE VIEW */
+function renderFavorites() {
+  const fav = document.getElementById("favoriteList");
+  if (!fav) return;
+
+  fav.innerHTML = "";
+
+  chats.filter(c => c.favorite).forEach(chat => {
+    const div = document.createElement("div");
+    div.className = "chat";
+    div.innerHTML = `<h3>${chat.title}</h3><p>${chat.content}</p>`;
+    fav.appendChild(div);
+  });
+}
+
+/* DASHBOARD */
+function updateDashboard() {
+  document.getElementById("totalChats").innerText = chats.length;
+  document.getElementById("totalPinned").innerText = chats.filter(c => c.favorite).length;
+
+  const tags = new Set(chats.map(c => c.tag));
+  document.getElementById("totalCategories").innerText = tags.size;
+}
+
+/* THEME */
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
+
+/* INIT */
+renderChats();
+updateDashboard();
+  </script>
 </body>
 </html>
-
